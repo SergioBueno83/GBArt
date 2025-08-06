@@ -22,8 +22,8 @@ const enlaces = [
     },
 ];
 
-const NAMESPACE = "gabrielalopezart";
-const LIKES_NAMESPACE = "gabrielalopezart-likes";
+const SIMPLECOUNTER_VISITAS = "gabrielalopezart-visitas";
+const SIMPLECOUNTER_LIKES = "gabrielalopezart-likes";
 
 const EnlacesAtractivos = () => {
     const [visitas, setVisitas] = useState(0);
@@ -31,44 +31,37 @@ const EnlacesAtractivos = () => {
     const [clicks, setClicks] = useState({});
 
     useEffect(() => {
-        // Contador de visitas
-        fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/visitas`)
+        // Contador de visitas global
+        fetch(`https://api.simplecounter.io/v1/count?key=${SIMPLECOUNTER_VISITAS}`, { method: 'POST' })
             .then(res => res.json())
-            .then(data => setVisitas(data.value));
+            .then(data => setVisitas(data.count));
 
-        // Obtener contador de Likes
-        fetch(`https://api.countapi.xyz/get/${LIKES_NAMESPACE}/likes`)
+        // Obtener contador de likes
+        fetch(`https://api.simplecounter.io/v1/get?key=${SIMPLECOUNTER_LIKES}`)
             .then(res => res.json())
-            .then(data => {
-                if (data.value !== undefined) {
-                    setLikes(data.value);
-                } else {
-                    // Si no existe, lo crea en 0
-                    fetch(`https://api.countapi.xyz/create?namespace=${LIKES_NAMESPACE}&key=likes&value=0`);
-                }
-            });
+            .then(data => setLikes(data.count || 0));
 
-        // Obtener contador de clicks de cada enlace
+        // Obtener contador de clicks por enlace
         enlaces.forEach(enlace => {
-            fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${enlace.key}`)
+            fetch(`https://api.simplecounter.io/v1/get?key=${SIMPLECOUNTER_VISITAS}-${enlace.key}`)
                 .then(res => res.json())
                 .then(data => {
-                    setClicks(prev => ({ ...prev, [enlace.key]: data.value || 0 }));
+                    setClicks(prev => ({ ...prev, [enlace.key]: data.count || 0 }));
                 });
         });
     }, []);
 
     const handleLike = () => {
-        fetch(`https://api.countapi.xyz/hit/${LIKES_NAMESPACE}/likes`)
+        fetch(`https://api.simplecounter.io/v1/count?key=${SIMPLECOUNTER_LIKES}`, { method: 'POST' })
             .then(res => res.json())
-            .then(data => setLikes(data.value));
+            .then(data => setLikes(data.count));
     };
 
     const handleLinkClick = (key) => {
-        fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${key}`)
+        fetch(`https://api.simplecounter.io/v1/count?key=${SIMPLECOUNTER_VISITAS}-${key}`, { method: 'POST' })
             .then(res => res.json())
             .then(data => {
-                setClicks(prev => ({ ...prev, [key]: data.value }));
+                setClicks(prev => ({ ...prev, [key]: data.count }));
             });
     };
 
