@@ -1,29 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import '../EnlacesAtractivos.css';
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const instagramUrl = import.meta.env.VITE_API_INSTAGRAM_URL;
+const whatsappUrl = import.meta.env.VITE_API_WHATSAPP_URL;
+const paginaWebUrl = import.meta.env.VITE_API_WEB_URL;
+
+
+
 
 const enlaces = [
-    {
-        nombre: 'Instagram',
-        url: 'https://www.instagram.com/gabrielalopez185.art/',
-        logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg',
-        key: 'instagram'
-    },
-    {
-        nombre: 'WhatsApp',
-        url: 'https://api.whatsapp.com/send?phone=59898910659&text=Hola%20quiero%20m%C3%A1s%20informaci%C3%B3n%20del%20cuadro%20a%20la%20venta%20',
-        logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg',
-        key: 'whatsapp'
-    },
-    {
+        {
         nombre: 'Pagina Web',
-        url: 'https://arteparaelalma.mypixieset.com/',
+        url: `${paginaWebUrl}`,
         logo: 'https://cdn-icons-png.flaticon.com/512/841/841364.png',
         key: 'paginaweb'
     },
-];
+        {
+        nombre: 'WhatsApp',
+        url: `${whatsappUrl}`,
+        logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg',
+        key: 'whatsapp'
+    },
+        {
+        nombre: 'Instagram',
+        url: `${instagramUrl}`,
+        logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg',
+        key: 'instagram'
+    },
 
-const SIMPLECOUNTER_VISITAS = "gabrielalopezart-visitas";
-const SIMPLECOUNTER_LIKES = "gabrielalopezart-likes";
+];
 
 const EnlacesAtractivos = () => {
     const [visitas, setVisitas] = useState(0);
@@ -31,48 +36,44 @@ const EnlacesAtractivos = () => {
     const [clicks, setClicks] = useState({});
 
     useEffect(() => {
-        // Contador de visitas global
-        fetch(`https://api.simplecounter.io/v1/count?key=${SIMPLECOUNTER_VISITAS}`, { method: 'POST' })
+        // Contador de visitas
+        fetch(`${baseUrl}visitas`, { method: 'POST' })
             .then(res => res.json())
-            .then(data => setVisitas(data.count));
+            .then(data => setVisitas(data.valor));
 
         // Obtener contador de likes
-        fetch(`https://api.simplecounter.io/v1/get?key=${SIMPLECOUNTER_LIKES}`)
+        fetch(`${baseUrl}likes`)
             .then(res => res.json())
-            .then(data => setLikes(data.count || 0));
+            .then(data => setLikes(data.valor));
 
         // Obtener contador de clicks por enlace
         enlaces.forEach(enlace => {
-            fetch(`https://api.simplecounter.io/v1/get?key=${SIMPLECOUNTER_VISITAS}-${enlace.key}`)
+            fetch(`${baseUrl}clicks/${enlace.key}`)
                 .then(res => res.json())
                 .then(data => {
-                    setClicks(prev => ({ ...prev, [enlace.key]: data.count || 0 }));
+                    setClicks(prev => ({ ...prev, [enlace.key]: data.valor }));
                 });
         });
     }, []);
 
     const handleLike = () => {
-        fetch(`https://api.simplecounter.io/v1/count?key=${SIMPLECOUNTER_LIKES}`, { method: 'POST' })
+        fetch(`${baseUrl}likes`, { method: 'POST' })
             .then(res => res.json())
-            .then(data => setLikes(data.count));
+            .then(data => setLikes(data.valor));
     };
 
     const handleLinkClick = (key) => {
-        fetch(`https://api.simplecounter.io/v1/count?key=${SIMPLECOUNTER_VISITAS}-${key}`, { method: 'POST' })
+        fetch(`${baseUrl}clicks/${key}`, { method: 'POST' })
             .then(res => res.json())
             .then(data => {
-                setClicks(prev => ({ ...prev, [key]: data.count }));
+                setClicks(prev => ({ ...prev, [key]: data.valor }));
             });
     };
 
     return (
         <div className="enlaces-container">
             <h2>Gabriela Lopez Art</h2>
-            <p>Visitas a esta página: {visitas}</p>
 
-            <button onClick={handleLike} className="like-button">
-                ❤️ Me gusta ({likes})
-            </button>
 
             <ul className="enlaces-list">
                 {enlaces.map((enlace, index) => (
@@ -90,11 +91,23 @@ const EnlacesAtractivos = () => {
                                 className="enlace-logo"
                                 style={{ width: 24, height: 24, marginRight: 8, verticalAlign: 'middle' }}
                             />
-                            {enlace.nombre} ({clicks[enlace.key] || 0})
+                            {enlace.nombre}
                         </a>
                     </li>
                 ))}
             </ul>
+            <button onClick={handleLike} className="like-button">
+                ❤️ Me gusta ({likes})
+            </button>
+            <div className="footer">
+                <hr style={{ margin: '24px 0', border: 'none', borderTop: '1px solid #b8c1ec' }} />
+                <p className="footer-title">¡Gracias por visitar mi página!</p>
+                <p className="footer-desc">
+                    Si te gusta mi trabajo, sígueme en <a href={enlaces[0].url} target="_blank" rel="noopener noreferrer">Instagram</a> o escríbeme por <a href={enlaces[1].url} target="_blank" rel="noopener noreferrer">WhatsApp</a>.
+                </p>
+                <p className="footer-copy">&copy; {new Date().getFullYear()} Gabriela Lopez Art</p>
+            </div>
+            
         </div>
     );
 };

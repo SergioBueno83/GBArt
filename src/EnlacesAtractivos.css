@@ -75,3 +75,39 @@
     margin-right: 8px;
   }
 }
+
+.footer {
+  margin-top: 32px;
+  padding: 16px 0 0 0;
+  background: none;
+}
+
+.footer-title {
+  color: #eebbc3;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-desc {
+  color: #b8c1ec;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.footer-desc a {
+  color: #eebbc3;
+  text-decoration: underline;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+
+.footer-desc a:hover {
+  color: #fff;
+}
+
+.footer-copy {
+  color: #888fa7;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
